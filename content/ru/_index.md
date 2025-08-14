@@ -1,4 +1,4 @@
 ---
-title: "Домашняя"
-author : "Hugo Authors"
+title: "Главная"
+author : "Nikita Zinovev"
 ---
