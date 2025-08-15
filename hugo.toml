@@ -1,5 +1,5 @@
 title = "Nize Echo"
-baseURL = 'https://nize-echo.blog/'
+baseURL = 'https://nize-echo.com/'
 
 # This is what goes in <html lang="">
 languageCode = 'ru-ru'
