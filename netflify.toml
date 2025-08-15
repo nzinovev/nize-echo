@@ -1,0 +1,15 @@
+[build]
+base = "/"
+command = "hugo --gc --minify"
+publish = "public"
+
+[build.environment]
+HUGO_VERSION = "0.128.0"
+HUGO_ENV = "production"
+GO_VERSION = "1.22"
+NODE_VERSION = "20"
+
+# Deploy Preview context: all deploys generated from
+# a pull/merge request will inherit these settings.
+[context.deploy-preview]
+command = "hugo --gc --minify -b $DEPLOY_PRIME_URL"
