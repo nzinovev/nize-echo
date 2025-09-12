@@ -1,0 +1,54 @@
+{{- define "main" -}}
+<div class="wrapper single-page">
+    <header class="header">
+        <h1 class="header-title center">{{ .Title }}</h1>
+        {{ if .Params.course }}
+        <div class="course-meta center">
+            {{ if .Params.course.level }}
+            <span class="course-level">{{ .Params.course.level }}</span>
+            {{ end }}
+            {{ if .Params.course.duration }}
+            <span class="course-duration">{{ .Params.course.duration }}</span>
+            {{ end }}
+            {{ if .Params.course.lessons }}
+            <span class="course-lessons">{{ .Params.course.lessons }} уроков</span>
+            {{ end }}
+        </div>
+        {{ end }}
+    </header>
+    
+    <main class="page-content" aria-label="Content">
+        <div class="course-content">
+            {{ .Content }}
+        </div>
+    </main>
+</div>
+
+<style>
+.course-meta {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.course-level,
+.course-duration,
+.course-lessons {
+    background: var(--accent-color);
+    color: var(--accent-text);
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.course-content {
+    max-width: 800px;
+    margin: 0 auto 3rem;
+    line-height: 1.7;
+}
+
+</style>
+{{- end -}}

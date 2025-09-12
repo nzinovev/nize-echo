@@ -1,0 +1,178 @@
+{{- define "main" -}}
+<div class="wrapper single-page">
+    <header class="header">
+        <div class="lesson-breadcrumb">
+            <a href="/courses/">Курсы</a>
+            {{ if .Params.lesson.course }}
+            <span> / </span>
+            <a href="/courses/{{ .Params.lesson.course }}/">{{ .Parent.Title }}</a>
+            {{ end }}
+            <span> / </span>
+            <span>{{ .Title }}</span>
+        </div>
+        
+        <h1 class="header-title center">{{ .Title }}</h1>
+        
+        {{ if .Params.lesson }}
+        <div class="lesson-meta center">
+            {{ if .Params.lesson.number }}
+            <span class="lesson-number">Урок {{ .Params.lesson.number }}</span>
+            {{ end }}
+            {{ if .Params.lesson.duration }}
+            <span class="lesson-duration">{{ .Params.lesson.duration }}</span>
+            {{ end }}
+        </div>
+        {{ end }}
+    </header>
+    
+    <main class="page-content" aria-label="Content">
+        <div class="lesson-content">
+            {{ .Content }}
+        </div>
+        
+        {{ if .Params.lesson.course }}
+        <div class="lesson-navigation">
+            {{ $course := .GetPage (printf "/courses/%s" .Params.lesson.course) }}
+            {{ $lessons := where $course.Pages "Type" "lessons" }}
+            {{ $sortedLessons := sort $lessons ".Params.lesson.number" }}
+            
+            {{ $currentIndex := -1 }}
+            {{ range $index, $lesson := $sortedLessons }}
+                {{ if eq $lesson.RelPermalink $.RelPermalink }}
+                    {{ $currentIndex = $index }}
+                {{ end }}
+            {{ end }}
+            
+            <div class="nav-buttons">
+                {{ if gt $currentIndex 0 }}
+                    {{ $prevLesson := index $sortedLessons (sub $currentIndex 1) }}
+                    <a href="{{ $prevLesson.RelPermalink }}" class="nav-button prev">
+                        ← Предыдущий урок
+                    </a>
+                {{ end }}
+                
+                {{ if lt $currentIndex (sub (len $sortedLessons) 1) }}
+                    {{ $nextLesson := index $sortedLessons (add $currentIndex 1) }}
+                    <a href="{{ $nextLesson.RelPermalink }}" class="nav-button next">
+                        Следующий урок →
+                    </a>
+                {{ end }}
+            </div>
+            
+            <div class="back-to-course">
+                <a href="{{ $course.RelPermalink }}" class="back-link">
+                    ← Вернуться к курсу
+                </a>
+            </div>
+        </div>
+        {{ end }}
+    </main>
+</div>
+
+<style>
+.lesson-breadcrumb {
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.lesson-breadcrumb a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.lesson-breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.lesson-meta {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.lesson-number,
+.lesson-duration {
+    background: var(--accent-color);
+    color: var(--accent-text);
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.lesson-content {
+    max-width: 800px;
+    margin: 0 auto 3rem;
+    line-height: 1.7;
+}
+
+.lesson-navigation {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    gap: 1rem;
+}
+
+.nav-button {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+    flex: 1;
+    text-align: center;
+    max-width: 200px;
+}
+
+.nav-button:hover {
+    background: var(--primary-hover);
+    color: white;
+    text-decoration: none;
+}
+
+.nav-button.prev {
+    margin-right: auto;
+}
+
+.nav-button.next {
+    margin-left: auto;
+}
+
+.back-to-course {
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.back-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .nav-buttons {
+        flex-direction: column;
+    }
+    
+    .nav-button {
+        max-width: none;
+    }
+}
+</style>
+{{- end -}}

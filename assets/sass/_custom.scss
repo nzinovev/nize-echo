@@ -1,0 +1,143 @@
+// Custom styles for code blocks in light theme
+html:not(.dark) {
+  pre {
+    background-color: #f6f8fa !important;
+    border: 1px solid #d0d7de;
+    
+    > code {
+      color: #1f2328 !important;
+    }
+  }
+  
+  // Syntax highlighting for light theme
+  .highlight,
+  .highlight .w {
+    color: #1f2328 !important;
+  }
+  
+  .highlight .err {
+    color: #cf222e !important;
+  }
+  
+  .highlight .c,
+  .highlight .cd,
+  .highlight .cm,
+  .highlight .c1,
+  .highlight .cs {
+    color: #808080 !important;
+  }
+  
+  .highlight .cp {
+    color: #bc4c00 !important;
+  }
+  
+  .highlight .nt {
+    color: #953800 !important;
+  }
+  
+  .highlight .o,
+  .highlight .ow {
+    color: #1f2328 !important;
+  }
+  
+  .highlight .p,
+  .highlight .pi {
+    color: #1f2328 !important;
+  }
+  
+  .highlight .gi {
+    color: #22863a !important;
+    background-color: #f0fff4 !important;
+  }
+  
+  .highlight .gd {
+    color: #cb2431 !important;
+    background-color: #ffeef0 !important;
+  }
+  
+  .highlight .gh {
+    color: #116329 !important;
+  }
+  
+  .highlight .k,
+  .highlight .kn,
+  .highlight .kp,
+  .highlight .kr,
+  .highlight .kv {
+    color: #cf222e !important;
+  }
+  
+  .highlight .kc {
+    color: #0550ae !important;
+  }
+  
+  .highlight .kt {
+    color: #953800 !important;
+  }
+  
+  .highlight .kd {
+    color: #0000FF !important;
+  }
+  
+  .highlight .s,
+  .highlight .sb,
+  .highlight .sc,
+  .highlight .sd,
+  .highlight .s2,
+  .highlight .sh,
+  .highlight .sx,
+  .highlight .s1 {
+    color: #008000 !important;
+  }
+  
+  .highlight .si {
+    color: #0550ae !important;
+  }
+  
+  .highlight .sr {
+    color: #0550ae !important;
+  }
+  
+  .highlight .se {
+    color: #4f07d4 !important;
+  }
+  
+  .highlight .nn {
+    color: #953800 !important;
+  }
+  
+  .highlight .nc {
+    color: #762e01 !important;
+  }
+  
+  .highlight .no {
+    color: #0550ae !important;
+  }
+  
+  .highlight .na {
+    color: #072610 !important;
+  }
+  
+  .highlight .m,
+  .highlight .mf,
+  .highlight .mh,
+  .highlight .mi,
+  .highlight .il,
+  .highlight .mo,
+  .highlight .mb,
+  .highlight .mx {
+    color: #0550ae !important;
+  }
+  
+  .highlight .ss {
+    color: #0550ae !important;
+  }
+
+  .highlight .nf {
+    color: #0550ae !important;
+  }
+
+  .highlight .n{
+    color: #0550ae !important;
+  }
+}
