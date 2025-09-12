@@ -21,31 +21,6 @@
         <div class="course-content">
             {{ .Content }}
         </div>
-        
-        {{ $lessons := where .Pages "Type" "lessons" }}
-        {{ if $lessons }}
-        <div class="lessons-section">
-            <h2>Уроки курса</h2>
-            <div class="lessons-list">
-                {{ range sort $lessons ".Params.lesson.number" }}
-                <div class="lesson-item">
-                    <div class="lesson-number">{{ .Params.lesson.number }}</div>
-                    <div class="lesson-content">
-                        <h3 class="lesson-title">
-                            <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-                        </h3>
-                        {{ if .Description }}
-                        <p class="lesson-description">{{ .Description }}</p>
-                        {{ end }}
-                        {{ if .Params.lesson.duration }}
-                        <span class="lesson-duration">{{ .Params.lesson.duration }}</span>
-                        {{ end }}
-                    </div>
-                </div>
-                {{ end }}
-            </div>
-        </div>
-        {{ end }}
     </main>
 </div>
 
@@ -75,82 +50,5 @@
     line-height: 1.7;
 }
 
-.lessons-section {
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.lessons-section h2 {
-    margin-bottom: 2rem;
-    text-align: center;
-}
-
-.lessons-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.lesson-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    background: var(--card-background);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 1.5rem;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.lesson-item:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.lesson-number {
-    background: var(--primary-color);
-    color: white;
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    flex-shrink: 0;
-}
-
-.lesson-content {
-    flex: 1;
-}
-
-.lesson-title {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.25rem;
-}
-
-.lesson-title a {
-    color: var(--primary-color);
-    text-decoration: none;
-}
-
-.lesson-title a:hover {
-    text-decoration: underline;
-}
-
-.lesson-description {
-    color: var(--text-color);
-    margin: 0 0 0.5rem 0;
-    line-height: 1.5;
-}
-
-.lesson-duration {
-    background: var(--accent-color);
-    color: var(--accent-text);
-    padding: 0.25rem 0.75rem;
-    border-radius: 12px;
-    font-size: 0.875rem;
-    font-weight: 500;
-}
 </style>
 {{- end -}}

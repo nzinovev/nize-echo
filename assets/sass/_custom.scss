@@ -24,7 +24,7 @@ html:not(.dark) {
   .highlight .cm,
   .highlight .c1,
   .highlight .cs {
-    color: #3185e4 !important;
+    color: #808080 !important;
   }
   
   .highlight .cp {
@@ -76,7 +76,7 @@ html:not(.dark) {
   }
   
   .highlight .kd {
-    color: #953800 !important;
+    color: #0000FF !important;
   }
   
   .highlight .s,
@@ -87,7 +87,7 @@ html:not(.dark) {
   .highlight .sh,
   .highlight .sx,
   .highlight .s1 {
-    color: #0550ae !important;
+    color: #008000 !important;
   }
   
   .highlight .si {
@@ -107,7 +107,7 @@ html:not(.dark) {
   }
   
   .highlight .nc {
-    color: #953800 !important;
+    color: #762e01 !important;
   }
   
   .highlight .no {
@@ -115,7 +115,7 @@ html:not(.dark) {
   }
   
   .highlight .na {
-    color: #116329 !important;
+    color: #072610 !important;
   }
   
   .highlight .m,
@@ -134,6 +134,10 @@ html:not(.dark) {
   }
 
   .highlight .nf {
+    color: #0550ae !important;
+  }
+
+  .highlight .n{
     color: #0550ae !important;
   }
 }
