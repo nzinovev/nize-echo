@@ -56,6 +56,11 @@ theme = "hugo-blog-awesome"
     name = 'Articles'
     url = '/posts/'
     weight = 20
+  [[Languages.en-us.menu.main]]
+    pageRef="courses"
+    name = 'Courses'
+    url = '/courses/'
+    weight = 25
 #  [[Languages.en-us.menu.main]]
 #    pageRef="about"
 #    name = 'About'
@@ -121,6 +126,11 @@ theme = "hugo-blog-awesome"
     name = 'Статьи'
     url = '/posts/'
     weight = 20
+  [[Languages.ru-ru.menu.main]]
+    pageRef="courses"
+    name = 'Курсы'
+    url = '/courses/'
+    weight = 25
 #  [[Languages.ru-ru.menu.main]]
 #    pageRef="about"
 #    name = 'О проекте'
