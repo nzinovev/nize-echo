@@ -74,6 +74,7 @@ theme = "hugo-blog-awesome"
   # the default value is set to 'auto'.
   # You can take a look at layouts/index.html for more information.
   description = "A digital voice, echoing through the noise of the information world."
+  ogimage = "avatar.jpg"
   mainSections = ['posts']
   toc = true # set to false to disable table of contents 'globally'
   tocOpen = false # set to true to open table of contents by default
@@ -144,6 +145,7 @@ theme = "hugo-blog-awesome"
   # the default value is set to 'auto'.
   # You can take a look at layouts/index.html for more information.
   description = "Цифровой голос, звучащий сквозь шум информационного мира."
+  ogimage = "avatar.jpg"
   mainSections = ['posts']
   toc = true # set to false to disable table of contents 'globally'
   tocOpen = false # set to true to open table of contents by default
