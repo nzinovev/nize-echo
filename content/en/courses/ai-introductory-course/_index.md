@@ -31,6 +31,7 @@ The course consists of 5 lessons, each of which includes theoretical material an
 
 Lessons:
 1. [Meet Your New Coding Buddy – AI](/courses/ai-introductory-course/lesson-1/)
+2. [Asking the Right Questions (Prompting Basics)](/courses/ai-introductory-course/lesson-2/)
 
 ---
 <br>

@@ -11,7 +11,7 @@
             <span class="course-duration">{{ .Params.course.duration }}</span>
             {{ end }}
             {{ if .Params.course.lessons }}
-            <span class="course-lessons">{{ .Params.course.lessons }} уроков</span>
+            <span class="course-lessons">{{ .Params.course.lessons }} {{ i18n "courses.lessons" }}</span>
             {{ end }}
         </div>
         {{ end }}

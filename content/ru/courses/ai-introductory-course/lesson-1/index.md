@@ -178,6 +178,5 @@ public class StringReverser {
 ---
 <br>
 
-- [← Вернуться к курсу](/courses/ai-introductory-course/)
-
-[//]: # (- [Следующий урок →]&#40;/courses/ai-introductory-course/lesson-2/&#41;)
+- [← В начало курса](/courses/ai-introductory-course/)
+- [Следующий урок →](/courses/ai-introductory-course/lesson-2/)
