@@ -39,7 +39,7 @@ help.
 > Explain recursion.
 
 Even with a short prompt, today’s AI will probably give you a decent explanation like _“Recursion is when a function
-calls itself”_ along with a simple code example. Not bad!
+calls itself”_ along with a simple code example (most likely using Python). Not bad!
 
 **Better prompt (with context):**
 
@@ -155,3 +155,10 @@ Remember: the AI isn’t a mind reader—it’s more like a helpful coding buddy
 clearly.
 
 In the next lesson, we’ll see how to use these prompting skills for **debugging and troubleshooting real code problems.**
+
+---
+<br>
+
+- [← Back to the course](/courses/ai-introductory-course/)
+- [← Previous lesson](/courses/ai-introductory-course/lesson-1/)
+<!-- - [Next lesson →](/courses/ai-introductory-course/lesson-3/) -->

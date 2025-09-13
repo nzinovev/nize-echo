@@ -26,12 +26,12 @@
                         <span class="course-level">{{ .Params.course.level }}</span>
                         {{ end }}
                         {{ if .Params.course.lessons }}
-                        <span class="course-lessons">{{ .Params.course.lessons }} уроков</span>
+                        <span class="course-lessons">{{ .Params.course.lessons }} {{ i18n "courses.lessons" }}</span>
                         {{ end }}
                     </div>
                     {{ end }}
                     <div class="course-actions">
-                        <a href="{{ .RelPermalink }}" class="course-link">Начать курс</a>
+                        <a href="{{ .RelPermalink }}" class="course-link">{{ i18n "courses.start_course" }}</a>
                     </div>
                 </div>
             </div>

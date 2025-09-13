@@ -163,5 +163,4 @@ Next time you’re stuck, don’t just search the web—try asking your AI buddy
 <br>
 
 - [← Back to the course](/courses/ai-introductory-course/)
-
-[//]: # (- [Next lesson →]&#40;/courses/ai-introductory-course/lesson-2/&#41;)
+- [Next lesson →](/courses/ai-introductory-course/lesson-2/)
