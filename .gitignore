@@ -32,3 +32,6 @@ go.work.sum
 # .idea/
 # .vscode/
 design/
+
+# Build output and local tools
+/bin/
