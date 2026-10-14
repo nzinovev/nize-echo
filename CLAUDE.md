@@ -49,8 +49,9 @@ Before finishing a task: `make build lint test` must pass. CI runs the same targ
 | `db/migrations` | goose SQL migrations `NNNNN_name.sql`, embedded by `db/embed.go` and applied on start |
 | `db/queries` | sqlc query files; generated code in `internal/store/sqlc` is committed |
 | `db/SCHEMA.md` | Maps each concept entity to its tables; post status and schema conventions |
-| `web/templates` | `html/template` layouts and partials for public pages |
-| `web/static` | CSS (copied from `design/system`), fonts, images |
+| `web` | Package `web`: embeds `templates` and `static` into the binary |
+| `web/templates` | `html/template` layouts and partials for public pages; `styleguide.html` is the design system test page at `/styleguide` |
+| `web/static` | CSS (`tokens.css`, `bundle.css` copied from `design/system`), `fonts.css` and self-hosted woff2 fonts in `fonts/`, images |
 | `admin/` | React + Vite + TypeScript admin app, embedded with `embed.FS`; `npm --prefix admin run build` type-checks and builds |
 | `compose.yaml` | Local dev services only (Postgres); production Compose goes in `deploy/` |
 | `deploy/` | Dockerfile (built from the repo root), Compose, Caddy, backup and restore docs |
@@ -79,4 +80,6 @@ Before finishing a task: `make build lint test` must pass. CI runs the same targ
 
 - Read `design/system/README.md` before any UI work; component rules are in `design/system/components/`.
 - Every page or admin screen has a mockup in `design/mockups/` (index in `design/README.md`). Match its structure, classes and states; list any deviation in the PR.
-- Style only with tokens and `nz-` classes from `design/system/`. New tokens or classes go into `design/system/` first, then are copied to `web/static`.
+- Style only with tokens and `nz-` classes from `design/system/`. New tokens or classes go into `design/system/` first, then are copied to `web/static`: `tokens.css` as is, `bundle.css` without its first line (the Google Fonts `@import`; `fonts.css` replaces it). `TestStaticMatchesDesignSystem` fails on drift when `design/` is present.
+- Fonts are self-hosted (the CSP allows only `'self'`): Spectral, Onest and IBM Plex Mono, latin and cyrillic subsets, declared in `web/static/fonts.css`.
+- Static files are served under `/static/` by plain name (`Cache-Control: no-cache`) and by content-hashed name (`bundle.3f9a0c1d2e4b.css`, cached a year, `immutable`). Hashes are computed from the embedded files at start-up; relative `url()`s in CSS are rewritten to hashed names. Templates link files with `{{asset "bundle.css"}}`, never a literal `/static/` path.

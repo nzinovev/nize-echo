@@ -58,6 +58,16 @@ func attr(r slog.Record, key string) slog.Value {
 	return v
 }
 
+// newHandler returns New(opts), failing the test on error.
+func newHandler(t *testing.T, opts Options) http.Handler {
+	t.Helper()
+	h, err := New(opts)
+	if err != nil {
+		t.Fatalf("New: %v", err)
+	}
+	return h
+}
+
 func serve(t *testing.T, h http.Handler, method, target string, header http.Header) *httptest.ResponseRecorder {
 	t.Helper()
 	req := httptest.NewRequest(method, target, http.NoBody)
@@ -70,7 +80,7 @@ func serve(t *testing.T, h http.Handler, method, target string, header http.Head
 }
 
 func TestHealthz(t *testing.T) {
-	h := New(Options{Logger: slog.New(&logRecorder{})})
+	h := newHandler(t, Options{Logger: slog.New(&logRecorder{})})
 	res := serve(t, h, http.MethodGet, "/healthz", nil)
 	if res.Code != http.StatusOK {
 		t.Fatalf("status = %d, want 200", res.Code)
@@ -89,16 +99,16 @@ func TestHealthzChecksDatabase(t *testing.T) {
 	up := pingerFunc(func(context.Context) error { return nil })
 	down := pingerFunc(func(context.Context) error { return errors.New("connection refused") })
 
-	if res := serve(t, New(Options{Logger: slog.New(&logRecorder{}), DB: up}), http.MethodGet, "/healthz", nil); res.Code != http.StatusOK {
+	if res := serve(t, newHandler(t, Options{Logger: slog.New(&logRecorder{}), DB: up}), http.MethodGet, "/healthz", nil); res.Code != http.StatusOK {
 		t.Errorf("database up: status = %d, want 200", res.Code)
 	}
-	if res := serve(t, New(Options{Logger: slog.New(&logRecorder{}), DB: down}), http.MethodGet, "/healthz", nil); res.Code != http.StatusServiceUnavailable {
+	if res := serve(t, newHandler(t, Options{Logger: slog.New(&logRecorder{}), DB: down}), http.MethodGet, "/healthz", nil); res.Code != http.StatusServiceUnavailable {
 		t.Errorf("database down: status = %d, want 503", res.Code)
 	}
 }
 
 func TestHomeAndNotFound(t *testing.T) {
-	h := New(Options{Logger: slog.New(&logRecorder{})})
+	h := newHandler(t, Options{Logger: slog.New(&logRecorder{})})
 	if res := serve(t, h, http.MethodGet, "/", nil); res.Code != http.StatusOK {
 		t.Errorf("GET / status = %d, want 200", res.Code)
 	}
@@ -108,7 +118,7 @@ func TestHomeAndNotFound(t *testing.T) {
 }
 
 func TestSecurityHeaders(t *testing.T) {
-	h := New(Options{Logger: slog.New(&logRecorder{})})
+	h := newHandler(t, Options{Logger: slog.New(&logRecorder{})})
 	for _, path := range []string{"/", "/healthz", "/nope"} {
 		res := serve(t, h, http.MethodGet, path, nil)
 		for _, name := range []string{"Content-Security-Policy", "X-Content-Type-Options", "Referrer-Policy"} {
@@ -174,7 +184,7 @@ func TestAbortHandlerPanicPropagates(t *testing.T) {
 
 func TestRequestLog(t *testing.T) {
 	logs := &logRecorder{}
-	h := New(Options{Logger: slog.New(logs)})
+	h := newHandler(t, Options{Logger: slog.New(logs)})
 	serve(t, h, http.MethodGet, "/nope", nil)
 
 	r, ok := logs.find("request")

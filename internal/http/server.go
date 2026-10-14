@@ -1,11 +1,17 @@
 package http
 
 import (
+	"bytes"
 	"context"
+	"fmt"
+	"html/template"
+	"io/fs"
 	"log/slog"
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/nzinovev/nize-echo/web"
 )
 
 // Pinger checks that a dependency, such as the database pool, is reachable.
@@ -20,19 +26,41 @@ type Options struct {
 	DB Pinger
 	// AdminDevURL, when set, proxies /admin/ to the Vite dev server.
 	AdminDevURL *url.URL
+	// Static and Templates default to the files embedded from web/.
+	Static    fs.FS
+	Templates fs.FS
 }
 
 // New returns the site's root handler: the router wrapped in the middleware
 // chain.
-func New(opts Options) http.Handler {
+func New(opts Options) (http.Handler, error) {
 	logger := opts.Logger
 	if logger == nil {
 		logger = slog.Default()
 	}
+	if opts.Static == nil {
+		opts.Static = web.Static()
+	}
+	if opts.Templates == nil {
+		opts.Templates = web.Templates()
+	}
+
+	static, err := newStaticAssets(opts.Static)
+	if err != nil {
+		return nil, fmt.Errorf("load static files: %w", err)
+	}
+	styleguide, err := template.New("styleguide.html").
+		Funcs(template.FuncMap{"asset": static.URL}).
+		ParseFS(opts.Templates, "styleguide.html")
+	if err != nil {
+		return nil, fmt.Errorf("parse templates: %w", err)
+	}
 
 	mux := http.NewServeMux()
 	mux.Handle("GET /healthz", healthz(opts.DB, logger))
+	mux.Handle("GET "+staticPrefix, static)
 	mux.HandleFunc("GET /{$}", handleHome)
+	mux.Handle("GET /styleguide", handleStyleguide(styleguide, logger))
 	if opts.AdminDevURL != nil {
 		mux.Handle("/admin/", adminDevProxy(opts.AdminDevURL, logger))
 		mux.Handle("GET /admin", http.RedirectHandler("/admin/", http.StatusMovedPermanently))
@@ -43,7 +71,7 @@ func New(opts Options) http.Handler {
 		recoverer(logger),
 		securityHeaders,
 		compress,
-	)
+	), nil
 }
 
 // healthTimeout bounds the dependency checks behind /healthz.
@@ -66,6 +94,22 @@ func healthz(db Pinger, logger *slog.Logger) http.Handler {
 			}
 		}
 		_, _ = w.Write([]byte("ok\n"))
+	})
+}
+
+// handleStyleguide renders the design system test page: the Post mockup and
+// the admin primitives, styled by the files in web/static.
+func handleStyleguide(tmpl *template.Template, logger *slog.Logger) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var buf bytes.Buffer
+		if err := tmpl.Execute(&buf, nil); err != nil {
+			logger.ErrorContext(r.Context(), "render styleguide", "err", err)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.Header().Set("X-Robots-Tag", "noindex")
+		_, _ = w.Write(buf.Bytes())
 	})
 }
 

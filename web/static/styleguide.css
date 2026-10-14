@@ -1,0 +1,19 @@
+/* Layout scaffolding for the /styleguide test page only. The mockups set these
+   rules inline; the public CSP forbids inline styles, so they live here. Real
+   pages get proper classes in design/system/bundle.css (P-01 onwards). */
+body{margin:0}
+.sg-page{min-height:100vh}
+.sg-main{padding-top:64px;padding-bottom:24px}
+.sg-body{display:flex;flex-wrap:wrap;gap:40px}
+.sg-body__margin{flex:1 1 200px;max-width:220px}
+.sg-body__main{flex:999 1 560px;min-width:0}
+.sg-cta{margin:72px 0 64px}
+.sg-label{margin:0 0 24px}
+.sg-related{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:40px}
+.sg-section{margin:72px 0 0;padding-top:24px;border-top:1px solid var(--rule)}
+.sg-row{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin:0 0 32px}
+.sg-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;max-width:var(--measure)}
+@media (max-width:720px){
+  .sg-main{padding-top:32px}
+  .sg-related{grid-template-columns:minmax(0,1fr);gap:24px}
+}
