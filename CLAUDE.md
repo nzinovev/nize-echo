@@ -25,11 +25,12 @@ When they disagree, the concept wins for behavior and the design system wins for
 | `make lint` | Run golangci-lint (config in `.golangci.yml`) |
 | `make fmt` | Format code with gofumpt and goimports |
 | `make generate` | Generate Go code from `db/queries` into `internal/store/sqlc` (config in `sqlc.yaml`) |
+| `make image` | Build the Docker image `nize-echo:dev` from `deploy/Dockerfile` (the same build CI runs) |
 | `make tidy` | Tidy `go.mod` and `go.sum` |
 | `make tools` | Install pinned dev tools (golangci-lint, air, sqlc) into `bin/` |
 | `make clean` | Remove `bin/` |
 
-Before finishing a task: `make build lint test` must pass.
+Before finishing a task: `make build lint test` must pass. CI runs the same targets, with `TEST_DATABASE_REQUIRED=1`, plus the admin build and `make image`'s Docker build.
 
 ## Layout
 
@@ -50,7 +51,8 @@ Before finishing a task: `make build lint test` must pass.
 | `web/static` | CSS (copied from `design/system`), fonts, images |
 | `admin/` | React + Vite + TypeScript admin app, embedded with `embed.FS`; `npm --prefix admin run build` type-checks and builds |
 | `compose.yaml` | Local dev services only (Postgres); production Compose goes in `deploy/` |
-| `deploy/` | Dockerfile, Compose, Caddy, backup and restore docs |
+| `deploy/` | Dockerfile (built from the repo root), Compose, Caddy, backup and restore docs |
+| `.github/workflows/` | CI (`ci.yml`): admin build, Go build, lint, tests against a Postgres service, Docker image build; all jobs must pass to merge |
 | `bin/` | Build output and local tools (gitignored) |
 
 ## Conventions
@@ -64,7 +66,8 @@ Before finishing a task: `make build lint test` must pass.
 - New logic has unit tests; database code is tested against a real Postgres, not mocks: call `storetest.New(t)` for an empty database (run `store.Migrate` on it for the schema). It reads `TEST_DATABASE_URL`, which `make test` points at the compose Postgres.
 - Migrations are forward-only in practice: never edit one that has landed on `main`; add a new file. Every migration runs under a Postgres advisory lock at start-up.
 - Schema: follow the conventions in `db/SCHEMA.md` (identity ids, `lang` enum with per-language child tables keyed `(parent_id, lang)`, slug `CHECK`, deferred unique positions). A schema change updates `db/SCHEMA.md` and the table list in `internal/store/schema_test.go`; run `make generate` after changing migrations or queries.
-- Go stays at the version in `go.mod` (1.25); pick dependency versions whose `go` directive does not exceed it.
+- Node for the admin is pinned in `admin/.nvmrc` (CI and the Dockerfile's `node` stage use the same major).
+- Go stays at the version in `go.mod` (1.25); pick dependency and Makefile tool versions whose `go` directive does not exceed it (CI installs them with `GOTOOLCHAIN=local`).
 - Public pages need no JavaScript to read and work in both RU and EN. UI strings come from translation files, not the database.
 - Don't build anything the concept lists as Later or Not planned beyond what the data model needs.
 - Update this file when a task adds a convention, command or directory.
