@@ -50,10 +50,10 @@ test: export TEST_DATABASE_URL ?= $(DEV_DATABASE_URL)
 test: ## Run all Go tests with the race detector
 	go test -race ./...
 
-lint: tools ## Run golangci-lint
+lint: $(GOLANGCI_LINT) ## Run golangci-lint
 	$(GOLANGCI_LINT) run ./...
 
-fmt: tools ## Format code (gofumpt, goimports)
+fmt: $(GOLANGCI_LINT) ## Format code (gofumpt, goimports)
 	$(GOLANGCI_LINT) fmt ./...
 
 generate: $(SQLC) ## Generate Go code from db/queries with sqlc
