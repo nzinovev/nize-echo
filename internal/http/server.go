@@ -3,11 +3,14 @@ package http
 import (
 	"log/slog"
 	"net/http"
+	"net/url"
 )
 
 // Options configures the site handler.
 type Options struct {
 	Logger *slog.Logger
+	// AdminDevURL, when set, proxies /admin/ to the Vite dev server.
+	AdminDevURL *url.URL
 }
 
 // New returns the site's root handler: the router wrapped in the middleware
@@ -21,6 +24,10 @@ func New(opts Options) http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", handleHealthz)
 	mux.HandleFunc("GET /{$}", handleHome)
+	if opts.AdminDevURL != nil {
+		mux.Handle("/admin/", adminDevProxy(opts.AdminDevURL, logger))
+		mux.Handle("GET /admin", http.RedirectHandler("/admin/", http.StatusMovedPermanently))
+	}
 
 	return chain(mux,
 		requestLog(logger),

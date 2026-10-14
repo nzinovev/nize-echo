@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"net/url"
 	"time"
 )
 
@@ -12,6 +13,7 @@ type config struct {
 	Addr            string        // SITE_ADDR: listen address
 	LogLevel        slog.Level    // LOG_LEVEL: debug, info, warn or error
 	ShutdownTimeout time.Duration // SHUTDOWN_TIMEOUT: grace period for in-flight requests
+	AdminDevURL     *url.URL      // ADMIN_DEV_URL: Vite dev server to proxy /admin/ to; dev only
 }
 
 // loadConfig reads the configuration through getenv, applying defaults for
@@ -41,6 +43,18 @@ func loadConfig(getenv func(string) string) (config, error) {
 			errs = append(errs, fmt.Errorf("SHUTDOWN_TIMEOUT: must be positive, got %s", d))
 		default:
 			cfg.ShutdownTimeout = d
+		}
+	}
+
+	if v := getenv("ADMIN_DEV_URL"); v != "" {
+		u, err := url.Parse(v)
+		switch {
+		case err != nil:
+			errs = append(errs, fmt.Errorf("ADMIN_DEV_URL: %w", err))
+		case (u.Scheme != "http" && u.Scheme != "https") || u.Host == "":
+			errs = append(errs, fmt.Errorf("ADMIN_DEV_URL: want an absolute http(s) URL, got %q", v))
+		default:
+			cfg.AdminDevURL = u
 		}
 	}
 

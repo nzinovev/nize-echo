@@ -17,11 +17,15 @@ When they disagree, the concept wins for behavior and the design system wins for
 | `make help` | List make targets (default goal) |
 | `make build` | Build the server binary into `bin/site` |
 | `make run` | Build and run the server |
+| `docker compose up -d` | Start the dev Postgres 16 (`compose.yaml`; host port `POSTGRES_PORT`, default 5432) |
+| `make dev` | Run `dev-go` and `dev-admin` together; the site is at `:8080`, the admin at `/admin/` |
+| `make dev-go` | Run the Go server with live reload (air, `.air.toml`) |
+| `make dev-admin` | Run the Vite dev server on `:5173` (installs `admin/node_modules` if needed) |
 | `make test` | Run all Go tests with the race detector |
 | `make lint` | Run golangci-lint (config in `.golangci.yml`) |
 | `make fmt` | Format code with gofumpt and goimports |
 | `make tidy` | Tidy `go.mod` and `go.sum` |
-| `make tools` | Install pinned dev tools (golangci-lint) into `bin/` |
+| `make tools` | Install pinned dev tools (golangci-lint, air) into `bin/` |
 | `make clean` | Remove `bin/` |
 
 Before finishing a task: `make build lint test` must pass.
@@ -41,15 +45,17 @@ Before finishing a task: `make build lint test` must pass.
 | `db/queries` | sqlc query files |
 | `web/templates` | `html/template` layouts and partials for public pages |
 | `web/static` | CSS (copied from `design/system`), fonts, images |
-| `admin/` | React + Vite + TypeScript admin app, embedded with `embed.FS` |
+| `admin/` | React + Vite + TypeScript admin app, embedded with `embed.FS`; `npm --prefix admin run build` type-checks and builds |
+| `compose.yaml` | Local dev services only (Postgres); production Compose goes in `deploy/` |
 | `deploy/` | Dockerfile, Compose, Caddy, backup and restore docs |
 | `bin/` | Build output and local tools (gitignored) |
 
 ## Conventions
 
 - Stack: standard library `net/http` routing, `html/template`, Postgres 16 with pgx and sqlc, goose migrations. Config comes from environment variables.
-- Every env variable is read in `cmd/site/config.go` (with its default) and nowhere else; `SITE_ADDR`, `LOG_LEVEL`, `SHUTDOWN_TIMEOUT` so far.
+- Every env variable is read in `cmd/site/config.go` (with its default) and nowhere else; `SITE_ADDR`, `LOG_LEVEL`, `SHUTDOWN_TIMEOUT`, `ADMIN_DEV_URL` so far; `.env.example` lists the dev values.
 - `internal/http` names its package `http`; import it as `sitehttp`. Middleware lives in that package; response-writer wrappers must implement `Unwrap()` so `http.ResponseController` keeps working.
+- Local dev: the Go server proxies `/admin/` to Vite when `ADMIN_DEV_URL` is set (`make dev` sets it), so the admin and its API share one origin and HMR runs through the proxy. The proxied pages drop the CSP header because Vite injects an inline script; nothing else does.
 - Logging with `log/slog`. Wrap errors with `fmt.Errorf("...: %w", err)`.
 - No new dependency without a one-line reason in the PR description.
 - New logic has unit tests; database code is tested against a real Postgres, not mocks.

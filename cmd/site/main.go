@@ -39,9 +39,13 @@ func run(ctx context.Context, getenv func(string) string) error {
 	logger := slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: cfg.LogLevel}))
 	slog.SetDefault(logger)
 
+	if cfg.AdminDevURL != nil {
+		logger.Info("proxying /admin/ to the Vite dev server", "target", cfg.AdminDevURL.String())
+	}
+
 	srv := &http.Server{
 		Addr:              cfg.Addr,
-		Handler:           sitehttp.New(sitehttp.Options{Logger: logger}),
+		Handler:           sitehttp.New(sitehttp.Options{Logger: logger, AdminDevURL: cfg.AdminDevURL}),
 		ReadHeaderTimeout: 5 * time.Second,
 		ReadTimeout:       30 * time.Second,
 		WriteTimeout:      60 * time.Second,

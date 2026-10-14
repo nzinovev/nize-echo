@@ -26,10 +26,15 @@ func TestLoadConfigOverrides(t *testing.T) {
 		"SITE_ADDR":        "127.0.0.1:9000",
 		"LOG_LEVEL":        "debug",
 		"SHUTDOWN_TIMEOUT": "3s",
+		"ADMIN_DEV_URL":    "http://localhost:5173",
 	}))
 	if err != nil {
 		t.Fatalf("loadConfig: %v", err)
 	}
+	if cfg.AdminDevURL == nil || cfg.AdminDevURL.String() != "http://localhost:5173" {
+		t.Errorf("AdminDevURL = %v, want http://localhost:5173", cfg.AdminDevURL)
+	}
+	cfg.AdminDevURL = nil
 	want := config{Addr: "127.0.0.1:9000", LogLevel: slog.LevelDebug, ShutdownTimeout: 3 * time.Second}
 	if cfg != want {
 		t.Errorf("got %+v, want %+v", cfg, want)
@@ -43,6 +48,8 @@ func TestLoadConfigInvalid(t *testing.T) {
 		"negative timeout": {"SHUTDOWN_TIMEOUT": "-1s"},
 		"zero timeout":     {"SHUTDOWN_TIMEOUT": "0s"},
 		"several bad vars": {"LOG_LEVEL": "loud", "SHUTDOWN_TIMEOUT": "soon"},
+		"relative admin":   {"ADMIN_DEV_URL": "localhost:5173"},
+		"admin bad scheme": {"ADMIN_DEV_URL": "ftp://localhost:5173"},
 	}
 	for name, vars := range tests {
 		t.Run(name, func(t *testing.T) {
