@@ -44,7 +44,8 @@ Before finishing a task: `make build lint test` must pass.
 | `internal/store` | pgx pool (`Open`), migrations (`Migrate`), sqlc-generated queries in `internal/store/sqlc` |
 | `internal/store/storetest` | Test helper: a fresh Postgres database per test |
 | `db/migrations` | goose SQL migrations `NNNNN_name.sql`, embedded by `db/embed.go` and applied on start |
-| `db/queries` | sqlc query files |
+| `db/queries` | sqlc query files; generated code in `internal/store/sqlc` is committed |
+| `db/SCHEMA.md` | Maps each concept entity to its tables; post status and schema conventions |
 | `web/templates` | `html/template` layouts and partials for public pages |
 | `web/static` | CSS (copied from `design/system`), fonts, images |
 | `admin/` | React + Vite + TypeScript admin app, embedded with `embed.FS`; `npm --prefix admin run build` type-checks and builds |
@@ -62,6 +63,7 @@ Before finishing a task: `make build lint test` must pass.
 - No new dependency without a one-line reason in the PR description.
 - New logic has unit tests; database code is tested against a real Postgres, not mocks: call `storetest.New(t)` for an empty database (run `store.Migrate` on it for the schema). It reads `TEST_DATABASE_URL`, which `make test` points at the compose Postgres.
 - Migrations are forward-only in practice: never edit one that has landed on `main`; add a new file. Every migration runs under a Postgres advisory lock at start-up.
+- Schema: follow the conventions in `db/SCHEMA.md` (identity ids, `lang` enum with per-language child tables keyed `(parent_id, lang)`, slug `CHECK`, deferred unique positions). A schema change updates `db/SCHEMA.md` and the table list in `internal/store/schema_test.go`; run `make generate` after changing migrations or queries.
 - Go stays at the version in `go.mod` (1.25); pick dependency versions whose `go` directive does not exceed it.
 - Public pages need no JavaScript to read and work in both RU and EN. UI strings come from translation files, not the database.
 - Don't build anything the concept lists as Later or Not planned beyond what the data model needs.
