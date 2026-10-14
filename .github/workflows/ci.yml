@@ -46,12 +46,13 @@ jobs:
       - uses: actions/setup-go@v7
         with:
           go-version-file: go.mod
-      # Pinned tools live in bin/; the Makefile holds their versions.
+      # Pinned tools live in bin/; the Makefile holds their versions. Installing
+      # them all checks that each still builds with the go.mod Go version.
       - uses: actions/cache@v6
         with:
           path: bin
           key: tools-${{ runner.os }}-${{ hashFiles('Makefile', 'go.mod') }}
-      - run: make lint
+      - run: make tools lint
 
   test:
     name: Tests

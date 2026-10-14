@@ -67,7 +67,7 @@ Before finishing a task: `make build lint test` must pass. CI runs the same targ
 - Migrations are forward-only in practice: never edit one that has landed on `main`; add a new file. Every migration runs under a Postgres advisory lock at start-up.
 - Schema: follow the conventions in `db/SCHEMA.md` (identity ids, `lang` enum with per-language child tables keyed `(parent_id, lang)`, slug `CHECK`, deferred unique positions). A schema change updates `db/SCHEMA.md` and the table list in `internal/store/schema_test.go`; run `make generate` after changing migrations or queries.
 - Node for the admin is pinned in `admin/.nvmrc` (CI and the Dockerfile's `node` stage use the same major).
-- Go stays at the version in `go.mod` (1.25); pick dependency versions whose `go` directive does not exceed it.
+- Go stays at the version in `go.mod` (1.25); pick dependency and Makefile tool versions whose `go` directive does not exceed it (CI installs them with `GOTOOLCHAIN=local`).
 - Public pages need no JavaScript to read and work in both RU and EN. UI strings come from translation files, not the database.
 - Don't build anything the concept lists as Later or Not planned beyond what the data model needs.
 - Update this file when a task adds a convention, command or directory.

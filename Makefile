@@ -1,5 +1,5 @@
 GOLANGCI_LINT_VERSION := v2.5.0
-AIR_VERSION           := v1.67.4
+AIR_VERSION           := v1.67.1
 SQLC_VERSION          := v1.30.0
 
 BIN           := $(CURDIR)/bin
