@@ -48,6 +48,8 @@ Before finishing a task: `make build lint test` must pass.
 ## Conventions
 
 - Stack: standard library `net/http` routing, `html/template`, Postgres 16 with pgx and sqlc, goose migrations. Config comes from environment variables.
+- Every env variable is read in `cmd/site/config.go` (with its default) and nowhere else; `SITE_ADDR`, `LOG_LEVEL`, `SHUTDOWN_TIMEOUT` so far.
+- `internal/http` names its package `http`; import it as `sitehttp`. Middleware lives in that package; response-writer wrappers must implement `Unwrap()` so `http.ResponseController` keeps working.
 - Logging with `log/slog`. Wrap errors with `fmt.Errorf("...: %w", err)`.
 - No new dependency without a one-line reason in the PR description.
 - New logic has unit tests; database code is tested against a real Postgres, not mocks.
