@@ -1,14 +1,23 @@
 package http
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 	"net/url"
+	"time"
 )
+
+// Pinger checks that a dependency, such as the database pool, is reachable.
+type Pinger interface {
+	Ping(ctx context.Context) error
+}
 
 // Options configures the site handler.
 type Options struct {
 	Logger *slog.Logger
+	// DB, when set, is pinged by /healthz.
+	DB Pinger
 	// AdminDevURL, when set, proxies /admin/ to the Vite dev server.
 	AdminDevURL *url.URL
 }
@@ -22,7 +31,7 @@ func New(opts Options) http.Handler {
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /healthz", handleHealthz)
+	mux.Handle("GET /healthz", healthz(opts.DB, logger))
 	mux.HandleFunc("GET /{$}", handleHome)
 	if opts.AdminDevURL != nil {
 		mux.Handle("/admin/", adminDevProxy(opts.AdminDevURL, logger))
@@ -37,10 +46,27 @@ func New(opts Options) http.Handler {
 	)
 }
 
-func handleHealthz(w http.ResponseWriter, _ *http.Request) {
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	w.Header().Set("Cache-Control", "no-store")
-	_, _ = w.Write([]byte("ok\n"))
+// healthTimeout bounds the dependency checks behind /healthz.
+const healthTimeout = 2 * time.Second
+
+// healthz reports 200 when the server and its database are reachable, 503
+// otherwise.
+func healthz(db Pinger, logger *slog.Logger) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+		w.Header().Set("Cache-Control", "no-store")
+		if db != nil {
+			ctx, cancel := context.WithTimeout(r.Context(), healthTimeout)
+			defer cancel()
+			if err := db.Ping(ctx); err != nil {
+				logger.WarnContext(r.Context(), "health check: database unreachable", "err", err)
+				w.WriteHeader(http.StatusServiceUnavailable)
+				_, _ = w.Write([]byte("database unreachable\n"))
+				return
+			}
+		}
+		_, _ = w.Write([]byte("ok\n"))
+	})
 }
 
 // handleHome is a placeholder until the public layout lands in P-01.

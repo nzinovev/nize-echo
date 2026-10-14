@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"compress/gzip"
 	"context"
+	"errors"
 	"io"
 	"log/slog"
 	"net/http"
@@ -77,6 +78,22 @@ func TestHealthz(t *testing.T) {
 	body, _ := io.ReadAll(res.Body)
 	if string(body) != "ok\n" {
 		t.Errorf("body = %q, want %q", body, "ok\n")
+	}
+}
+
+type pingerFunc func(context.Context) error
+
+func (f pingerFunc) Ping(ctx context.Context) error { return f(ctx) }
+
+func TestHealthzChecksDatabase(t *testing.T) {
+	up := pingerFunc(func(context.Context) error { return nil })
+	down := pingerFunc(func(context.Context) error { return errors.New("connection refused") })
+
+	if res := serve(t, New(Options{Logger: slog.New(&logRecorder{}), DB: up}), http.MethodGet, "/healthz", nil); res.Code != http.StatusOK {
+		t.Errorf("database up: status = %d, want 200", res.Code)
+	}
+	if res := serve(t, New(Options{Logger: slog.New(&logRecorder{}), DB: down}), http.MethodGet, "/healthz", nil); res.Code != http.StatusServiceUnavailable {
+		t.Errorf("database down: status = %d, want 503", res.Code)
 	}
 }
 

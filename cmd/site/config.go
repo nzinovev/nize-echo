@@ -10,6 +10,7 @@ import (
 
 // config is the server configuration, read from environment variables.
 type config struct {
+	DatabaseURL     string        // DATABASE_URL: Postgres connection string; required
 	Addr            string        // SITE_ADDR: listen address
 	LogLevel        slog.Level    // LOG_LEVEL: debug, info, warn or error
 	ShutdownTimeout time.Duration // SHUTDOWN_TIMEOUT: grace period for in-flight requests
@@ -25,6 +26,11 @@ func loadConfig(getenv func(string) string) (config, error) {
 		ShutdownTimeout: 10 * time.Second,
 	}
 	var errs []error
+
+	cfg.DatabaseURL = getenv("DATABASE_URL")
+	if cfg.DatabaseURL == "" {
+		errs = append(errs, errors.New("DATABASE_URL: required"))
+	}
 
 	if v := getenv("SITE_ADDR"); v != "" {
 		cfg.Addr = v

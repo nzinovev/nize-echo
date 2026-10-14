@@ -14,6 +14,7 @@ import (
 	"time"
 
 	sitehttp "github.com/nzinovev/nize-echo/internal/http"
+	"github.com/nzinovev/nize-echo/internal/store"
 )
 
 // version is set at build time with -ldflags "-X main.version=...".
@@ -39,13 +40,26 @@ func run(ctx context.Context, getenv func(string) string) error {
 	logger := slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: cfg.LogLevel}))
 	slog.SetDefault(logger)
 
+	pool, err := store.Open(ctx, cfg.DatabaseURL)
+	if err != nil {
+		return fmt.Errorf("open database: %w", err)
+	}
+	defer pool.Close()
+	if _, err := store.Migrate(ctx, pool, logger); err != nil {
+		return fmt.Errorf("migrate database: %w", err)
+	}
+
 	if cfg.AdminDevURL != nil {
 		logger.Info("proxying /admin/ to the Vite dev server", "target", cfg.AdminDevURL.String())
 	}
 
 	srv := &http.Server{
-		Addr:              cfg.Addr,
-		Handler:           sitehttp.New(sitehttp.Options{Logger: logger, AdminDevURL: cfg.AdminDevURL}),
+		Addr: cfg.Addr,
+		Handler: sitehttp.New(sitehttp.Options{
+			Logger:      logger,
+			DB:          pool,
+			AdminDevURL: cfg.AdminDevURL,
+		}),
 		ReadHeaderTimeout: 5 * time.Second,
 		ReadTimeout:       30 * time.Second,
 		WriteTimeout:      60 * time.Second,

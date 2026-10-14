@@ -6,8 +6,19 @@ import (
 	"time"
 )
 
+const testDatabaseURL = "postgres://nize:nize@localhost:5432/nize_echo"
+
+// env returns a getenv over m, with DATABASE_URL set unless m overrides it.
 func env(m map[string]string) func(string) string {
-	return func(k string) string { return m[k] }
+	return func(k string) string {
+		if v, ok := m[k]; ok {
+			return v
+		}
+		if k == "DATABASE_URL" {
+			return testDatabaseURL
+		}
+		return ""
+	}
 }
 
 func TestLoadConfigDefaults(t *testing.T) {
@@ -15,7 +26,7 @@ func TestLoadConfigDefaults(t *testing.T) {
 	if err != nil {
 		t.Fatalf("loadConfig: %v", err)
 	}
-	want := config{Addr: ":8080", LogLevel: slog.LevelInfo, ShutdownTimeout: 10 * time.Second}
+	want := config{DatabaseURL: testDatabaseURL, Addr: ":8080", LogLevel: slog.LevelInfo, ShutdownTimeout: 10 * time.Second}
 	if cfg != want {
 		t.Errorf("got %+v, want %+v", cfg, want)
 	}
@@ -35,7 +46,7 @@ func TestLoadConfigOverrides(t *testing.T) {
 		t.Errorf("AdminDevURL = %v, want http://localhost:5173", cfg.AdminDevURL)
 	}
 	cfg.AdminDevURL = nil
-	want := config{Addr: "127.0.0.1:9000", LogLevel: slog.LevelDebug, ShutdownTimeout: 3 * time.Second}
+	want := config{DatabaseURL: testDatabaseURL, Addr: "127.0.0.1:9000", LogLevel: slog.LevelDebug, ShutdownTimeout: 3 * time.Second}
 	if cfg != want {
 		t.Errorf("got %+v, want %+v", cfg, want)
 	}
@@ -43,6 +54,7 @@ func TestLoadConfigOverrides(t *testing.T) {
 
 func TestLoadConfigInvalid(t *testing.T) {
 	tests := map[string]map[string]string{
+		"no database url":  {"DATABASE_URL": ""},
 		"bad level":        {"LOG_LEVEL": "loud"},
 		"bad timeout":      {"SHUTDOWN_TIMEOUT": "soon"},
 		"negative timeout": {"SHUTDOWN_TIMEOUT": "-1s"},
