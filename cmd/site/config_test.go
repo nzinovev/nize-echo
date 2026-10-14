@@ -1,0 +1,73 @@
+package main
+
+import (
+	"log/slog"
+	"testing"
+	"time"
+)
+
+const testDatabaseURL = "postgres://nize:nize@localhost:5432/nize_echo"
+
+// env returns a getenv over m, with DATABASE_URL set unless m overrides it.
+func env(m map[string]string) func(string) string {
+	return func(k string) string {
+		if v, ok := m[k]; ok {
+			return v
+		}
+		if k == "DATABASE_URL" {
+			return testDatabaseURL
+		}
+		return ""
+	}
+}
+
+func TestLoadConfigDefaults(t *testing.T) {
+	cfg, err := loadConfig(env(nil))
+	if err != nil {
+		t.Fatalf("loadConfig: %v", err)
+	}
+	want := config{DatabaseURL: testDatabaseURL, Addr: ":8080", LogLevel: slog.LevelInfo, ShutdownTimeout: 10 * time.Second}
+	if cfg != want {
+		t.Errorf("got %+v, want %+v", cfg, want)
+	}
+}
+
+func TestLoadConfigOverrides(t *testing.T) {
+	cfg, err := loadConfig(env(map[string]string{
+		"SITE_ADDR":        "127.0.0.1:9000",
+		"LOG_LEVEL":        "debug",
+		"SHUTDOWN_TIMEOUT": "3s",
+		"ADMIN_DEV_URL":    "http://localhost:5173",
+	}))
+	if err != nil {
+		t.Fatalf("loadConfig: %v", err)
+	}
+	if cfg.AdminDevURL == nil || cfg.AdminDevURL.String() != "http://localhost:5173" {
+		t.Errorf("AdminDevURL = %v, want http://localhost:5173", cfg.AdminDevURL)
+	}
+	cfg.AdminDevURL = nil
+	want := config{DatabaseURL: testDatabaseURL, Addr: "127.0.0.1:9000", LogLevel: slog.LevelDebug, ShutdownTimeout: 3 * time.Second}
+	if cfg != want {
+		t.Errorf("got %+v, want %+v", cfg, want)
+	}
+}
+
+func TestLoadConfigInvalid(t *testing.T) {
+	tests := map[string]map[string]string{
+		"no database url":  {"DATABASE_URL": ""},
+		"bad level":        {"LOG_LEVEL": "loud"},
+		"bad timeout":      {"SHUTDOWN_TIMEOUT": "soon"},
+		"negative timeout": {"SHUTDOWN_TIMEOUT": "-1s"},
+		"zero timeout":     {"SHUTDOWN_TIMEOUT": "0s"},
+		"several bad vars": {"LOG_LEVEL": "loud", "SHUTDOWN_TIMEOUT": "soon"},
+		"relative admin":   {"ADMIN_DEV_URL": "localhost:5173"},
+		"admin bad scheme": {"ADMIN_DEV_URL": "ftp://localhost:5173"},
+	}
+	for name, vars := range tests {
+		t.Run(name, func(t *testing.T) {
+			if _, err := loadConfig(env(vars)); err == nil {
+				t.Error("want an error, got nil")
+			}
+		})
+	}
+}

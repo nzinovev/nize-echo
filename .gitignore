@@ -35,3 +35,7 @@ design/
 
 # Build output and local tools
 /bin/
+
+# Admin app
+/admin/node_modules/
+/admin/dist/
