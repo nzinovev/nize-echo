@@ -15,7 +15,7 @@ LDFLAGS       := -s -w -X main.version=$(VERSION)
 POSTGRES_PORT ?= 5432
 DEV_DATABASE_URL := postgres://nize:nize@localhost:$(POSTGRES_PORT)/nize_echo?sslmode=disable
 
-.PHONY: help build run dev dev-go dev-admin test lint fmt generate tidy tools clean
+.PHONY: help build run dev dev-go dev-admin test lint fmt generate image tidy tools clean
 
 help: ## List make targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F ':.*## ' '{printf "  %-10s %s\n", $$1, $$2}'
@@ -59,6 +59,9 @@ fmt: tools ## Format code (gofumpt, goimports)
 generate: $(SQLC) ## Generate Go code from db/queries with sqlc
 	@if ls db/queries/*.sql >/dev/null 2>&1; then $(SQLC) generate; \
 	else echo "generate: no queries in db/queries yet, nothing to do"; fi
+
+image: ## Build the Docker image nize-echo:dev (deploy/Dockerfile)
+	docker build -f deploy/Dockerfile --build-arg VERSION=$(VERSION) -t nize-echo:dev .
 
 tidy: ## Tidy go.mod and go.sum
 	go mod tidy

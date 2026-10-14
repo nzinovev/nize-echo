@@ -1,0 +1,9 @@
+# Keep the build context to what the image needs.
+.git
+.github
+.agentum
+bin
+design
+admin/node_modules
+admin/dist
+.env
