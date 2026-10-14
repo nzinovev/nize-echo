@@ -1,3 +1,68 @@
+# Agentum project configuration.
+#
+# The registry of named checks the orchestrator runs itself, against the task's
+# checkpoint commit, after the agent's final stage and before review. Commands
+# live only here, as an argument vector; packs and task input may add checks by
+# name only. A required-check failure blocks delivery.
+#
+# The checks mirror CI (.github/workflows/ci.yml) and the CLAUDE.md "before
+# finishing" gate. When the project gains a new check, add it here too.
 api: agentum/v1
+
 references:
   - design
+
+checks:
+  # Server binary. Same target as CI's "Go build" job.
+  - name: build
+    description: "make build"
+    command: ["make", "build"]
+    workdir: "."
+    timeout_seconds: 300
+    max_output_bytes: 1048576
+    required: true
+
+  # golangci-lint with .golangci.yml: linters (govet included) and the
+  # gofumpt/goimports formatters, so unformatted code fails here too. The make
+  # target installs the pinned golangci-lint into bin/ on first run.
+  - name: lint
+    description: "make lint"
+    command: ["make", "lint"]
+    workdir: "."
+    timeout_seconds: 600
+    max_output_bytes: 1048576
+    required: true
+
+  # All Go tests with the race detector. DB tests use TEST_DATABASE_URL
+  # (default: the compose Postgres); TEST_DATABASE_REQUIRED=1 makes them fail
+  # instead of skipping when Postgres is unreachable, as in CI.
+  - name: test
+    description: "TEST_DATABASE_REQUIRED=1 make test"
+    command: ["env", "TEST_DATABASE_REQUIRED=1", "make", "test"]
+    workdir: "."
+    timeout_seconds: 900
+    max_output_bytes: 1048576
+    required: true
+
+  # Admin app: type-check and Vite build. `make admin/node_modules` runs
+  # `npm ci` only when package.json or the lockfile changed.
+  - name: admin-build
+    description: "npm ci (if needed) && npm --prefix admin run build"
+    command:
+      - sh
+      - "-c"
+      - "make admin/node_modules && npm --prefix admin run build"
+    workdir: "."
+    timeout_seconds: 600
+    max_output_bytes: 1048576
+    required: true
+
+  # Docker image from deploy/Dockerfile, the same build as CI's "Docker image"
+  # job. Needs a running Docker daemon.
+  - name: image
+    description: "make image"
+    command: ["make", "image"]
+    workdir: "."
+    timeout_seconds: 1200
+    max_output_bytes: 1048576
+    required: true

@@ -32,6 +32,8 @@ When they disagree, the concept wins for behavior and the design system wins for
 
 Before finishing a task: `make build lint test` must pass. CI runs the same targets, with `TEST_DATABASE_REQUIRED=1`, plus the admin build and `make image`'s Docker build.
 
+`.agentum.yaml` lists the checks the agent orchestrator runs on its own after an agent finishes; it mirrors CI. When a task adds, removes or changes a check (a new CI job, make target, linter step or test suite), update `.agentum.yaml` in the same change.
+
 ## Layout
 
 | Path | What goes there |
@@ -53,6 +55,7 @@ Before finishing a task: `make build lint test` must pass. CI runs the same targ
 | `compose.yaml` | Local dev services only (Postgres); production Compose goes in `deploy/` |
 | `deploy/` | Dockerfile (built from the repo root), Compose, Caddy, backup and restore docs |
 | `.github/workflows/` | CI (`ci.yml`): admin build, Go build, lint, tests against a Postgres service, Docker image build; all jobs must pass to merge |
+| `.agentum.yaml` | Checks the agent orchestrator runs after each agent (build, lint, test, admin build, image) |
 | `bin/` | Build output and local tools (gitignored) |
 
 ## Conventions
