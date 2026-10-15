@@ -15,8 +15,9 @@ import (
 const minCompressSize = 512
 
 // compress encodes response bodies with brotli or gzip, whichever the client
-// accepts (brotli preferred). Upgrades, HEAD requests, bodies that are already
-// encoded and binary media types pass through unchanged.
+// accepts (brotli preferred). Upgrades, HEAD requests, partial (206)
+// responses, bodies that are already encoded and binary media types pass
+// through unchanged.
 func compress(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Vary", "Accept-Encoding")
@@ -98,7 +99,10 @@ func (cw *compressWriter) Write(b []byte) (int, error) {
 func (cw *compressWriter) decide(firstWrite int) {
 	cw.decided = true
 	h := cw.Header()
-	if h.Get("Content-Encoding") == "" && compressible(h, firstWrite) {
+	// A partial response's Content-Range counts bytes of the unencoded body,
+	// so encoding it would hand the client a range it cannot reassemble.
+	partial := cw.status == http.StatusPartialContent || h.Get("Content-Range") != ""
+	if !partial && h.Get("Content-Encoding") == "" && compressible(h, firstWrite) {
 		h.Set("Content-Encoding", cw.encoding)
 		h.Del("Content-Length")
 		if etag := h.Get("ETag"); etag != "" && !strings.HasPrefix(etag, "W/") {

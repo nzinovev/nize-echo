@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
@@ -12,6 +13,7 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/andybalholm/brotli"
 )
@@ -276,6 +278,30 @@ func TestCompressSkips(t *testing.T) {
 				t.Error("body was altered")
 			}
 		})
+	}
+}
+
+// Content-Range counts bytes of the unencoded body, so a range response must
+// go out unencoded, or the client cannot reassemble the file.
+func TestCompressSkipsPartialContent(t *testing.T) {
+	h := compress(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.ServeContent(w, r, "big.css", time.Time{}, strings.NewReader(largeText))
+	}))
+	res := serve(t, h, http.MethodGet, "/", http.Header{
+		"Accept-Encoding": {"gzip, br"},
+		"Range":           {"bytes=0-999"},
+	})
+	if res.Code != http.StatusPartialContent {
+		t.Fatalf("status = %d, want 206", res.Code)
+	}
+	if got := res.Header().Get("Content-Encoding"); got != "" {
+		t.Errorf("Content-Encoding = %q, want none", got)
+	}
+	if got, want := res.Header().Get("Content-Range"), fmt.Sprintf("bytes 0-999/%d", len(largeText)); got != want {
+		t.Errorf("Content-Range = %q, want %q", got, want)
+	}
+	if got := res.Body.String(); got != largeText[:1000] {
+		t.Errorf("body is %d bytes and differs from the requested range", len(got))
 	}
 }
 
