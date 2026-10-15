@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Styleguide — nize-echo</title>
+<link rel="stylesheet" href="{{asset "fonts.css"}}">
+<link rel="stylesheet" href="{{asset "tokens.css"}}">
+<link rel="stylesheet" href="{{asset "bundle.css"}}">
+<link rel="stylesheet" href="{{asset "styleguide.css"}}">
+</head>
+{{/* Test page for the design system assets (F-07): the Post mockup
+     (design/mockups/public/post.html) plus the admin primitives, rendered
+     with the self-hosted fonts and the copied CSS. */ -}}
+<body class="nz-root sg-page" data-theme="night">
+
+<header class="nz-header">
+<nav class="nz-header__bar" aria-label="Основная навигация">
+<a class="nz-logo" href="/">nize·echo</a>
+<div class="nz-nav">
+<a href="#" aria-current="page">Блог</a>
+<a href="#">Контексты</a>
+<a href="#">Резюме</a>
+<a href="#">Курсы</a>
+<a class="nz-nav__tg" href="#">Telegram ↗</a>
+<a class="nz-lang" href="#" lang="en" hreflang="en" aria-label="Switch to English">EN</a>
+</div>
+<div class="nz-header__mobile">
+<a class="nz-header__tg" href="#" aria-label="Telegram">TG ↗</a>
+<button type="button" class="nz-iconbtn" aria-label="Открыть меню" aria-expanded="false" aria-haspopup="dialog"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h16"></path><path d="M10 16h10"></path></svg></button>
+</div>
+</nav>
+</header>
+
+<main class="nz-container sg-main">
+<article>
+<header class="nz-posthead">
+<div class="nz-posthead__side">
+<div class="nz-meta nz-meta--column">
+<span class="nz-meta__label">Контекст</span>
+<a class="nz-meta__ctx" href="#">Как устроен этот сайт · 01/03</a>
+<time datetime="2026-10-09">09.10.2026</time>
+<span>7 мин чтения</span>
+</div>
+</div>
+<div class="nz-posthead__main">
+<div class="nz-posthead__inline"><div class="nz-meta nz-meta--inline"><a class="nz-meta__ctx" href="#">Как устроен этот сайт · 01/03</a><time datetime="2026-10-09">09.10.2026</time><span>7 мин</span></div></div>
+<h1 class="nz-posthead__title">Почему я перестал писать посты через&nbsp;git</h1>
+<p class="nz-posthead__lede">Статический генератор хорош, пока ты не замечаешь, что между идеей и публикацией стоят коммит, CI и деплой.</p>
+</div>
+</header>
+
+<div class="sg-body">
+<div class="sg-body__margin"></div>
+<div class="sg-body__main">
+<div class="nz-prose nz-prose--dropcap nz-prose--numbered">
+<p>Мой прошлый сайт был собран на статическом генераторе. Каждый пост — markdown-файл в репозитории, каждая правка опечатки — новый деплой. Технически это красиво, но на практике я начал <a href="#">откладывать заметки</a>, потому что их публикация ощущалась как релиз.</p>
+<h2>Контент в базе, код в git</h2>
+<p>Новое правило простое: деплой нужен только когда меняется <code>код</code>. Пост живёт в Postgres, редактируется в админке и становится публичным сразу после нажатия кнопки или в назначенное время.</p>
+<pre class="chroma"><code><span class="kd">func</span> (s *Store) <span class="nf">Published</span>(ctx context.Context, lang <span class="kt">string</span>) ([]Post, <span class="kt">error</span>) {
+    <span class="c1">// отложенные посты появляются сами: фильтр по publish_at</span>
+    <span class="k">return</span> s.q.ListPublished(ctx, lang, time.Now())
+}</code></pre>
+<aside class="nz-sidenote" aria-label="Заметка на полях">Отложенная публикация не требует планировщика — достаточно сравнить время в запросе.</aside>
+<blockquote><p>«Хороший инструмент для письма — тот, о котором не думаешь, пока пишешь.»</p></blockquote>
+<h2>Что получилось</h2>
+<p>Через месяц на новом движке:</p>
+<ul>
+<li>черновики и отложенная публикация без отдельных задач по расписанию;</li>
+<li>картинки вставляются прямо в редактор;</li>
+<li>посты группируются по контекстам, а не только по тегам.</li>
+</ul>
+</div>
+<ul class="nz-tags" aria-label="Теги">
+<li><a href="#">#go</a></li>
+<li><a href="#">#postgres</a></li>
+<li><a href="#">#блог</a></li>
+</ul>
+</div>
+</div>
+</article>
+
+<aside class="nz-cta sg-cta" aria-label="Telegram">
+<p class="nz-cta__text">Короткие мысли между постами — <em>в Telegram</em>.</p>
+<a class="nz-btn nz-btn--outline" href="#">Подписаться ↗</a>
+</aside>
+
+<section aria-labelledby="next-title">
+<h2 id="next-title" class="nz-label sg-label">Дальше в контексте «Как устроен этот сайт»</h2>
+<div class="sg-related">
+<a class="nz-card-related is-next" href="#"><span class="nz-card-related__pos">02 / 03</span><span class="nz-card-related__title">Go, Postgres и один бинарник: архитектура nize-echo</span></a>
+<a class="nz-card-related" href="#"><span class="nz-card-related__pos">03 / 03</span><span class="nz-card-related__title">Админка без деплоя: редактор и отложенные посты</span></a>
+</div>
+</section>
+
+<section class="sg-section" aria-labelledby="admin-title">
+<h2 id="admin-title" class="nz-label sg-label">Admin primitives</h2>
+<div class="sg-row">
+<button type="button" class="nz-btn nz-btn--primary">Опубликовать</button>
+<button type="button" class="nz-btn nz-btn--outline">Предпросмотр</button>
+<button type="button" class="nz-btn nz-btn--ghost">Отмена</button>
+<button type="button" class="nz-btn nz-btn--danger">Удалить</button>
+<button type="button" class="nz-btn nz-btn--primary nz-btn--s">Сохранить</button>
+</div>
+<div class="sg-row">
+<span class="nz-badge nz-badge--draft"><span class="nz-badge__dot" aria-hidden="true"></span>Черновик</span>
+<span class="nz-badge nz-badge--scheduled"><span class="nz-badge__dot" aria-hidden="true"></span>Запланирован<span class="nz-badge__detail">· 20.10.2026 10:00</span></span>
+<span class="nz-badge nz-badge--published"><span class="nz-badge__dot" aria-hidden="true"></span>Опубликован</span>
+<span class="nz-badge nz-badge--lang" title="Translation present">RU</span>
+<span class="nz-badge nz-badge--lang is-missing" title="Translation missing">EN</span>
+</div>
+<div class="sg-fields">
+<div class="nz-field">
+<label class="nz-field__label" for="sg-title">Заголовок</label>
+<input class="nz-field__control" id="sg-title" value="Почему я перестал писать посты через git">
+<span class="nz-field__hint">Виден в списке постов и в превью ссылки.</span>
+</div>
+<div class="nz-field is-error">
+<label class="nz-field__label" for="sg-slug">Slug</label>
+<input class="nz-field__control is-mono" id="sg-slug" value="why-not-git" aria-invalid="true" aria-describedby="sg-slug-hint">
+<span class="nz-field__hint" id="sg-slug-hint">Slug already used by another post — change it.</span>
+</div>
+</div>
+</section>
+</main>
+
+<footer class="nz-footer">
+<div class="nz-footer__bar"><span>© 2026 nize·echo</span><div class="nz-footer__links"><a href="#">Telegram</a><a href="#">RSS</a></div></div>
+</footer>
+</body>
+</html>

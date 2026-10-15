@@ -53,13 +53,18 @@ func run(ctx context.Context, getenv func(string) string) error {
 		logger.Info("proxying /admin/ to the Vite dev server", "target", cfg.AdminDevURL.String())
 	}
 
+	handler, err := sitehttp.New(sitehttp.Options{
+		Logger:      logger,
+		DB:          pool,
+		AdminDevURL: cfg.AdminDevURL,
+	})
+	if err != nil {
+		return fmt.Errorf("build handler: %w", err)
+	}
+
 	srv := &http.Server{
-		Addr: cfg.Addr,
-		Handler: sitehttp.New(sitehttp.Options{
-			Logger:      logger,
-			DB:          pool,
-			AdminDevURL: cfg.AdminDevURL,
-		}),
+		Addr:              cfg.Addr,
+		Handler:           handler,
 		ReadHeaderTimeout: 5 * time.Second,
 		ReadTimeout:       30 * time.Second,
 		WriteTimeout:      60 * time.Second,
