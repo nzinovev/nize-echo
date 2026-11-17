@@ -222,6 +222,11 @@ func TestCompress(t *testing.T) {
 		{"br", "br"},
 		{"gzip, deflate, br", "br"},
 		{"br;q=0, gzip", "gzip"},
+		{"gzip;q=1, br;q=0.1", "gzip"},
+		{"br;q=0.2, GZIP;Q=0.6", "gzip"},
+		{"br;q=0, *;q=0.5", "gzip"},
+		{"br;q=0.5, identity;q=1", ""},
+		{"br;q=invalid, gzip;q=0.5", "gzip"},
 		{"", ""},
 		{"identity", ""},
 	}

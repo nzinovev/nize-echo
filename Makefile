@@ -15,12 +15,15 @@ LDFLAGS       := -s -w -X main.version=$(VERSION)
 POSTGRES_PORT ?= 5432
 DEV_DATABASE_URL := postgres://nize:nize@localhost:$(POSTGRES_PORT)/nize_echo?sslmode=disable
 
-.PHONY: help build run dev dev-go dev-admin test lint fmt generate image tidy tools clean
+.PHONY: help assets build run dev dev-go dev-admin test lint fmt generate image tidy tools clean
 
 help: ## List make targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F ':.*## ' '{printf "  %-10s %s\n", $$1, $$2}'
 
-build: ## Build the server binary into bin/site
+assets: ## Generate the embedded public asset manifest
+	go generate ./web
+
+build: assets ## Build the server binary into bin/site
 	go build -trimpath -ldflags "$(LDFLAGS)" -o $(BIN)/site ./cmd/site
 
 run: build ## Build and run the server (DATABASE_URL defaults to the compose Postgres)

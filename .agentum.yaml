@@ -10,7 +10,7 @@
 api: agentum/v1
 
 references:
-  - design
+  - docs
 
 checks:
   # Server binary. Same target as CI's "Go build" job.
@@ -35,7 +35,8 @@ checks:
 
   # All Go tests with the race detector. DB tests use TEST_DATABASE_URL
   # (default: the compose Postgres); TEST_DATABASE_REQUIRED=1 makes them fail
-  # instead of skipping when Postgres is unreachable, as in CI.
+  # instead of skipping when Postgres is unreachable, as in CI. The web tests
+  # check the pinned design CSS and generated asset manifest.
   - name: test
     description: "TEST_DATABASE_REQUIRED=1 make test"
     command: ["env", "TEST_DATABASE_REQUIRED=1", "make", "test"]

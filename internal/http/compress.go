@@ -14,14 +14,14 @@ import (
 // minCompressSize is the smallest known body worth compressing.
 const minCompressSize = 512
 
-// compress encodes response bodies with brotli or gzip, whichever the client
-// accepts (brotli preferred). Upgrades, HEAD requests, partial (206)
+// compress encodes response bodies with the client's preferred supported coding.
+// Upgrades, HEAD requests, partial (206)
 // responses, bodies that are already encoded and binary media types pass
 // through unchanged.
 func compress(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Vary", "Accept-Encoding")
-		enc := negotiateEncoding(r.Header.Get("Accept-Encoding"))
+		enc := negotiateEncoding(strings.Join(r.Header.Values("Accept-Encoding"), ","))
 		if enc == "" || r.Method == http.MethodHead || r.Header.Get("Upgrade") != "" {
 			next.ServeHTTP(w, r)
 			return
@@ -32,30 +32,40 @@ func compress(next http.Handler) http.Handler {
 	})
 }
 
-// negotiateEncoding picks "br", "gzip" or "" from an Accept-Encoding header.
+// negotiateEncoding honors explicit weights and uses Brotli to break ties.
 func negotiateEncoding(header string) string {
-	var br, gz bool
+	weights := make(map[string]float64, 4)
 	for part := range strings.SplitSeq(header, ",") {
-		name, params, _ := strings.Cut(strings.TrimSpace(part), ";")
-		if q, ok := strings.CutPrefix(strings.TrimSpace(params), "q="); ok {
-			if v, err := strconv.ParseFloat(q, 64); err == nil && v == 0 {
-				continue
+		name, params, hasParams := strings.Cut(part, ";")
+		name = strings.ToLower(strings.TrimSpace(name))
+		switch name {
+		case "br", "gzip", "identity", "*":
+			weight := 1.0
+			if hasParams {
+				key, value, _ := strings.Cut(params, "=")
+				parsed, err := strconv.ParseFloat(strings.TrimSpace(value), 64)
+				weight = 0
+				if strings.EqualFold(strings.TrimSpace(key), "q") && err == nil && parsed >= 0 && parsed <= 1 {
+					weight = parsed
+				}
 			}
-		}
-		switch strings.ToLower(strings.TrimSpace(name)) {
-		case "br":
-			br = true
-		case "gzip":
-			gz = true
+			weights[name] = weight
 		}
 	}
-	switch {
-	case br:
-		return "br"
-	case gz:
-		return "gzip"
+	winner, best := "", 0.0
+	for _, name := range []string{"br", "gzip"} {
+		weight, explicit := weights[name]
+		if !explicit {
+			weight = weights["*"]
+		}
+		if weight > best {
+			winner, best = name, weight
+		}
 	}
-	return ""
+	if weights["identity"] > best {
+		return ""
+	}
+	return winner
 }
 
 // compressWriter decides on the first write whether to compress, based on

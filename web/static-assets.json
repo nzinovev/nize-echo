@@ -1,0 +1,66 @@
+{
+  "bundle.css": {
+    "hash": "7d15b14dfc05"
+  },
+  "fonts.css": {
+    "hash": "fb2a0c941002",
+    "css": "/* nize-echo — self-hosted fonts: the families design/system/bundle.css imports\n   from Google Fonts, latin and cyrillic subsets only, woff2. Onest is a variable\n   font, one file per subset for 400–600. Spectral adds 600 italic for the logo.\n   All three are under the SIL Open Font License 1.1 (fonts/*-OFL.txt). */\n/* IBM Plex Mono 400 normal, cyrillic */\n@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:400;font-display:swap;src:url(fonts/ibm-plex-mono-400-cyrillic.7635422bd10d.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}\n/* IBM Plex Mono 400 normal, latin */\n@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:400;font-display:swap;src:url(fonts/ibm-plex-mono-400-latin.08949f728dc5.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}\n/* IBM Plex Mono 500 normal, cyrillic */\n@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:500;font-display:swap;src:url(fonts/ibm-plex-mono-500-cyrillic.1d89462e86cb.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}\n/* IBM Plex Mono 500 normal, latin */\n@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:500;font-display:swap;src:url(fonts/ibm-plex-mono-500-latin.01d285447409.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}\n/* Onest 400 600 normal, cyrillic */\n@font-face{font-family:'Onest';font-style:normal;font-weight:400 600;font-display:swap;src:url(fonts/onest-variable-cyrillic.68e5e01d6265.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}\n/* Onest 400 600 normal, latin */\n@font-face{font-family:'Onest';font-style:normal;font-weight:400 600;font-display:swap;src:url(fonts/onest-variable-latin.052df7453325.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}\n/* Spectral 400 italic, cyrillic */\n@font-face{font-family:'Spectral';font-style:italic;font-weight:400;font-display:swap;src:url(fonts/spectral-400-italic-cyrillic.800e7c447804.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}\n/* Spectral 400 italic, latin */\n@font-face{font-family:'Spectral';font-style:italic;font-weight:400;font-display:swap;src:url(fonts/spectral-400-italic-latin.db397149a9f7.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}\n/* Spectral 600 italic, cyrillic */\n@font-face{font-family:'Spectral';font-style:italic;font-weight:600;font-display:swap;src:url(fonts/spectral-600-italic-cyrillic.c0dd34416b2f.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}\n/* Spectral 600 italic, latin */\n@font-face{font-family:'Spectral';font-style:italic;font-weight:600;font-display:swap;src:url(fonts/spectral-600-italic-latin.2a3ef8cf75b8.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}\n/* Spectral 400 normal, cyrillic */\n@font-face{font-family:'Spectral';font-style:normal;font-weight:400;font-display:swap;src:url(fonts/spectral-400-cyrillic.26ed02d522d3.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}\n/* Spectral 400 normal, latin */\n@font-face{font-family:'Spectral';font-style:normal;font-weight:400;font-display:swap;src:url(fonts/spectral-400-latin.cf8daee3b83c.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}\n/* Spectral 600 normal, cyrillic */\n@font-face{font-family:'Spectral';font-style:normal;font-weight:600;font-display:swap;src:url(fonts/spectral-600-cyrillic.a8297883e0f0.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}\n/* Spectral 600 normal, latin */\n@font-face{font-family:'Spectral';font-style:normal;font-weight:600;font-display:swap;src:url(fonts/spectral-600-latin.33faca8b5795.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}\n"
+  },
+  "fonts/ibm-plex-mono-400-cyrillic.woff2": {
+    "hash": "7635422bd10d"
+  },
+  "fonts/ibm-plex-mono-400-latin.woff2": {
+    "hash": "08949f728dc5"
+  },
+  "fonts/ibm-plex-mono-500-cyrillic.woff2": {
+    "hash": "1d89462e86cb"
+  },
+  "fonts/ibm-plex-mono-500-latin.woff2": {
+    "hash": "01d285447409"
+  },
+  "fonts/ibmplexmono-OFL.txt": {
+    "hash": "7e6b2818edbd"
+  },
+  "fonts/onest-OFL.txt": {
+    "hash": "071195d8806e"
+  },
+  "fonts/onest-variable-cyrillic.woff2": {
+    "hash": "68e5e01d6265"
+  },
+  "fonts/onest-variable-latin.woff2": {
+    "hash": "052df7453325"
+  },
+  "fonts/spectral-400-cyrillic.woff2": {
+    "hash": "26ed02d522d3"
+  },
+  "fonts/spectral-400-italic-cyrillic.woff2": {
+    "hash": "800e7c447804"
+  },
+  "fonts/spectral-400-italic-latin.woff2": {
+    "hash": "db397149a9f7"
+  },
+  "fonts/spectral-400-latin.woff2": {
+    "hash": "cf8daee3b83c"
+  },
+  "fonts/spectral-600-cyrillic.woff2": {
+    "hash": "a8297883e0f0"
+  },
+  "fonts/spectral-600-italic-cyrillic.woff2": {
+    "hash": "c0dd34416b2f"
+  },
+  "fonts/spectral-600-italic-latin.woff2": {
+    "hash": "2a3ef8cf75b8"
+  },
+  "fonts/spectral-600-latin.woff2": {
+    "hash": "33faca8b5795"
+  },
+  "fonts/spectral-OFL.txt": {
+    "hash": "501d6ceca8e5"
+  },
+  "styleguide.css": {
+    "hash": "37aae210da5e"
+  },
+  "tokens.css": {
+    "hash": "46ab281b72d3"
+  }
+}

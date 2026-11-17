@@ -26,8 +26,7 @@ type Options struct {
 	DB Pinger
 	// AdminDevURL, when set, proxies /admin/ to the Vite dev server.
 	AdminDevURL *url.URL
-	// Static and Templates default to the files embedded from web/.
-	Static    fs.FS
+	// Templates defaults to the files embedded from web/.
 	Templates fs.FS
 }
 
@@ -38,14 +37,15 @@ func New(opts Options) (http.Handler, error) {
 	if logger == nil {
 		logger = slog.Default()
 	}
-	if opts.Static == nil {
-		opts.Static = web.Static()
-	}
 	if opts.Templates == nil {
 		opts.Templates = web.Templates()
 	}
 
-	static, err := newStaticAssets(opts.Static)
+	manifest, err := web.AssetManifest()
+	if err != nil {
+		return nil, fmt.Errorf("decode static asset manifest: %w", err)
+	}
+	static, err := newStaticAssets(web.Static(), manifest)
 	if err != nil {
 		return nil, fmt.Errorf("load static files: %w", err)
 	}
