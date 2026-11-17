@@ -20,7 +20,7 @@ func TestAdminDevProxy(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	h := New(Options{Logger: slog.New(&logRecorder{}), AdminDevURL: target})
+	h := newHandler(t, Options{Logger: slog.New(&logRecorder{}), AdminDevURL: target})
 
 	res := serve(t, h, http.MethodGet, "/admin/src/main.tsx", nil)
 	if res.Code != http.StatusOK {
@@ -44,14 +44,14 @@ func TestAdminDevProxy(t *testing.T) {
 
 func TestAdminDevProxyUnreachable(t *testing.T) {
 	target, _ := url.Parse("http://127.0.0.1:1")
-	h := New(Options{Logger: slog.New(&logRecorder{}), AdminDevURL: target})
+	h := newHandler(t, Options{Logger: slog.New(&logRecorder{}), AdminDevURL: target})
 	if res := serve(t, h, http.MethodGet, "/admin/", nil); res.Code != http.StatusBadGateway {
 		t.Errorf("status = %d, want 502", res.Code)
 	}
 }
 
 func TestAdminNotMountedWithoutDevURL(t *testing.T) {
-	h := New(Options{Logger: slog.New(&logRecorder{})})
+	h := newHandler(t, Options{Logger: slog.New(&logRecorder{})})
 	if res := serve(t, h, http.MethodGet, "/admin/", nil); res.Code != http.StatusNotFound {
 		t.Errorf("status = %d, want 404", res.Code)
 	}

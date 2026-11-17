@@ -18,7 +18,7 @@ COPY . .
 # The admin build sits where the Go embed will read it.
 COPY --from=admin /src/admin/dist ./admin/dist
 ARG VERSION=dev
-RUN CGO_ENABLED=0 go build -trimpath -ldflags "-s -w -X main.version=${VERSION}" -o /out/site ./cmd/site
+RUN go generate ./web && CGO_ENABLED=0 go build -trimpath -ldflags "-s -w -X main.version=${VERSION}" -o /out/site ./cmd/site
 
 FROM gcr.io/distroless/static-debian12:nonroot
 COPY --from=server /out/site /site

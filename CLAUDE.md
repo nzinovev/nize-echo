@@ -4,9 +4,7 @@ Bilingual (RU/EN) personal site: a blog organized by contexts and tags, a CV, an
 
 ## Sources of truth
 
-- `design/Personal Site — Concept.md`: pages, behavior, content model, architecture, acceptance criteria AC-1 to AC-22.
-- `design/nize-echo — v1 Backlog.md`: tasks (IDs like F-01, C-02), their dependencies and *Done when* checks, and the shared definition of done.
-- `design/system/`: tokens, `nz-` CSS classes and components.
+The concept, backlog, and mockups live in the separate design studio. See [Design references](docs/design.md) for their paths and the CSS sync workflow.
 
 When they disagree, the concept wins for behavior and the design system wins for looks.
 
@@ -15,7 +13,8 @@ When they disagree, the concept wins for behavior and the design system wins for
 | Command | What it does |
 | --- | --- |
 | `make help` | List make targets (default goal) |
-| `make build` | Build the server binary into `bin/site` |
+| `make assets` | Regenerate the embedded public asset manifest |
+| `make build` | Generate public assets and build the server binary into `bin/site` |
 | `make run` | Build and run the server; migrations apply on start (`DATABASE_URL` defaults to the compose Postgres) |
 | `docker compose up -d` | Start the dev Postgres 16 (`compose.yaml`; host port `POSTGRES_PORT`, default 5432) |
 | `make dev` | Run `dev-go` and `dev-admin` together; the site is at `:8080`, the admin at `/admin/` |
@@ -49,8 +48,10 @@ Before finishing a task: `make build lint test` must pass. CI runs the same targ
 | `db/migrations` | goose SQL migrations `NNNNN_name.sql`, embedded by `db/embed.go` and applied on start |
 | `db/queries` | sqlc query files; generated code in `internal/store/sqlc` is committed |
 | `db/SCHEMA.md` | Maps each concept entity to its tables; post status and schema conventions |
-| `web/templates` | `html/template` layouts and partials for public pages |
-| `web/static` | CSS (copied from `design/system`), fonts, images |
+| `internal/staticassets` | Build-time public asset fingerprinting and CSS URL rewriting |
+| `web` | Embeds templates, static files and the generated manifest into the binary |
+| `web/templates` | `html/template` layouts and partials for public pages; `styleguide.html` is the design system test page at `/styleguide` |
+| `web/static` | CSS (`tokens.css`, `bundle.css` copied from `design/system`), `fonts.css` and self-hosted woff2 fonts in `fonts/`, images |
 | `admin/` | React + Vite + TypeScript admin app, embedded with `embed.FS`; `npm --prefix admin run build` type-checks and builds |
 | `compose.yaml` | Local dev services only (Postgres); production Compose goes in `deploy/` |
 | `deploy/` | Dockerfile (built from the repo root), Compose, Caddy, backup and restore docs |
@@ -77,6 +78,6 @@ Before finishing a task: `make build lint test` must pass. CI runs the same targ
 
 ## UI
 
-- Read `design/system/README.md` before any UI work; component rules are in `design/system/components/`.
-- Every page or admin screen has a mockup in `design/mockups/` (index in `design/README.md`). Match its structure, classes and states; list any deviation in the PR.
-- Style only with tokens and `nz-` classes from `design/system/`. New tokens or classes go into `design/system/` first, then are copied to `web/static`.
+- Use the studio's Night theme and `nz-` classes for public pages and the admin. Match the studio's mockups and list deviations in the PR.
+- Fonts are self-hosted under the same-origin CSP. Spectral, Onest and IBM Plex Mono use Latin and Cyrillic subsets declared in `web/static/fonts.css`.
+- Use `{{asset "bundle.css"}}` in templates. The build computes hashes and resolves relative CSS URLs into `web/static-assets.json`. Hashed URLs under `/static/` have a one-year immutable lifetime, and plain URLs revalidate. Commit the manifest after changing assets.
